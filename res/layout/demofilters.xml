@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent"
+	android:layout_height="wrap_content" >
+    
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+    
+	    <LinearLayout
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:orientation="vertical">
+	        
+	        <Spinner
+	            android:id="@+id/ImagesCombo"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+		        android:drawSelectorOnTop="true"
+		        android:prompt="@string/images_selector" 
+		        />
+	        
+	        <Spinner
+	            android:id="@+id/FiltersCombo"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+		        android:drawSelectorOnTop="true"
+		        android:prompt="@string/filters_selector" 
+		        />
+		            
+	    </LinearLayout>
+    
+        <TableLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
+        
+            <TableRow
+                android:id="@+id/FiltersRowParam1"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content">
+            </TableRow>
+            <TableRow
+                android:id="@+id/FiltersRowParam2"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content">
+            </TableRow>
+            
+        </TableLayout>
+    
+	    <LinearLayout
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:orientation="vertical"
+	        >
+	        
+	        <ImageView
+	            android:id="@+id/FiltersImageOriginal"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            />
+	                
+			<ImageView
+			    android:id="@+id/FiltersImageTransfo"
+			    android:layout_width="wrap_content"
+			    android:layout_height="wrap_content"
+			    />
+	   </LinearLayout>
+    
+    <Button 
+        android:id="@+id/FiltersAcceptButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Apply!"
+        />
+    
+    <TextView 
+        android:id="@+id/FiltersDebug" 
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" 
+        />
+        
+    </LinearLayout>
+        
+</ScrollView>

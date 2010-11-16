@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">CVM</string>
+    <string name="main_wellcome">Wellcome to <b>CVM!</b></string>
+    <string name="main_help">Press <i>Menu</i> to select an option.</string>
+    
+    <string name="demo_exec">Run Demos</string>
+    <string name="test_exec">Run Tests</string>
+    
+    <string name="demo_transfo">Transformations Demo</string>
+    <string name="demo_filters">Filters Demo</string>
+        <string name="filters_selector">Select a filter</string>
+        <string name="images_selector">Select an image</string>
+        
+    <string name="test_matrix">CvmMatrix Test</string>
+    <string name="test_matrixtypes">Matrix Types Test</string>
+    <string name="test_channel">CvmChannel Test</string>
+    <string name="test_image">CvmImage Test</string>
+</resources>

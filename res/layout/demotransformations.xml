@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content" >
+    
+    <TableLayout
+       android:layout_width="fill_parent" 
+       android:layout_height="fill_parent">
+       
+       <!-- Scale factors  -->
+       <TableRow
+       	android:layout_span="2">
+       
+       		<Spinner
+				android:id="@+id/ImagesCombo"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:drawSelectorOnTop="true"
+				android:prompt="@string/images_selector" 
+				/>
+       </TableRow>
+       
+       <TableRow>
+           
+           <TextView 
+               android:id="@+id/LabelScale" 
+               android:text="Scale"
+               android:gravity="center"
+               android:layout_width="fill_parent" 
+               />
+               
+        </TableRow>
+        
+       <TableRow>
+           
+           <TextView 
+               android:id="@+id/LabelScaleX" 
+               android:text="Scale X:"
+               android:width="100px" />
+               
+           <EditText 
+               android:id="@+id/EditScaleX"
+               android:numeric="decimal"
+               android:maxLength="4"
+               android:text="1.0"
+               android:width="220px" />
+        </TableRow>
+
+        <TableRow>
+           
+           <TextView 
+               android:id="@+id/LabelScaleY" 
+               android:text="Scale Y:"
+               android:width="100px" />
+               
+           <EditText 
+               android:id="@+id/EditScaleY"
+               android:numeric="decimal"
+               android:maxLength="4" 
+               android:text="1.0"
+               android:width="220px" />
+        </TableRow>
+
+        <!-- Translate factor -->
+    
+        <TableRow>
+           
+           <TextView 
+               android:id="@+id/LabelTrans" 
+               android:text="Translation"
+               android:gravity="center"
+               android:layout_width="fill_parent" 
+               />
+               
+        </TableRow>
+        
+       <TableRow>
+           
+           <TextView 
+               android:id="@+id/LabelTransX" 
+               android:text="Translation X:"
+               android:width="100px" />
+               
+           <EditText 
+               android:id="@+id/EditTransX"
+               android:numeric="decimal"
+               android:maxLength="4" 
+               android:text="0.0"
+               android:width="220px" />
+        </TableRow>
+
+        <TableRow>
+           
+           <TextView 
+               android:id="@+id/LabelTransY" 
+               android:text="Translation Y:"
+               android:width="100px" />
+               
+           <EditText 
+               android:id="@+id/EditTransY"
+               android:numeric="decimal"
+               android:maxLength="4" 
+               android:text="0.0"
+               android:width="220px" />
+        </TableRow>
+        
+        <!-- Rotation factor -->
+    
+        <TableRow>
+           
+           <TextView 
+               android:id="@+id/LabelRotation"
+               android:layout_width="fill_parent" 
+               android:text="Rotation"
+               android:gravity="center" 
+               />
+               
+        </TableRow>
+        
+       <TableRow>
+           
+           <TextView 
+               android:id="@+id/LabelRotation" 
+               android:text="Rotation:"
+               android:width="100px" />
+               
+           <EditText 
+               android:id="@+id/EditRotation"
+               android:numeric="decimal"
+               android:maxLength="4" 
+               android:text="0.0"
+               android:width="220px" />
+        </TableRow>
+    
+        <!-- Images -->
+        <TableRow>
+        	<LinearLayout
+        		android:layout_width="wrap_content"
+	        	android:layout_height="wrap_content"
+	        	android:orientation="vertical">
+	            
+	            <ImageView
+	                android:id="@+id/ImageOriginal"
+	                android:layout_width="wrap_content"
+	                android:layout_height="wrap_content"
+	                />
+	                
+	            <ImageView
+	                android:id="@+id/ImageTransfo"
+	                android:layout_width="wrap_content"
+	                android:layout_height="wrap_content"
+	                />
+            </LinearLayout>
+        </TableRow>
+    
+        <!-- Buttons -->
+        <TableRow>
+            <Button 
+               android:id="@+id/ButtonAccept"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:gravity="center" 
+               android:text="Apply!" />
+        </TableRow>
+ 
+        <TableRow>
+           
+           <TextView 
+               android:id="@+id/debug" 
+               android:layout_width="fill_parent" 
+               />
+               
+        </TableRow>
+ 
+    </TableLayout> 
+        
+</ScrollView>

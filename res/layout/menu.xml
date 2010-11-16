@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+	<item 
+	   android:id="@+id/demo_exec" 
+	   android:icon="@drawable/icon" 
+	   android:title="@string/demo_exec" >
+	
+		<menu>
+	        <item 
+	            android:id="@+id/demo_filters"
+	            android:title="@string/demo_filters" />
+		       
+		    <item
+				android:id="@+id/demo_transfo"         
+				android:title="@string/demo_transfo" />    	   
+		</menu>
+	</item>
+	
+	<item 
+       android:id="@+id/test_exec" 
+       android:icon="@drawable/icon" 
+       android:title="@string/test_exec" >
+    
+        <menu>
+            <item 
+                android:id="@+id/test_matrix"
+                android:title="@string/test_matrix" />
+                
+            <item 
+                android:id="@+id/test_matrixtypes"
+                android:title="@string/test_matrixtypes" />
+            
+            <item 
+                android:id="@+id/test_channel"
+                android:title="@string/test_channel" />
+               
+            <item
+                android:id="@+id/test_image"         
+                android:title="@string/test_image" />         
+        </menu>
+    </item>
+
+</menu>

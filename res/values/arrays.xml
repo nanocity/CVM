@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="filters">
+        <item>Average</item>
+        <item>High Boost</item>
+        <item>Gaussian</item>
+        <item>Sobel</item>
+    </string-array>
+    
+    <string-array name="images">
+        <item>bitmap_cat</item>
+        <item>bitmap_casco</item>
+        <item>bitmap_bn</item>
+    </string-array>
+
+</resources>
