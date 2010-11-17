@@ -165,6 +165,7 @@ public class DemoFilters extends Activity {
 	    			size = Integer.parseInt(param1.getText().toString());
 	    			int A = Integer.parseInt(param2.getText().toString());
 	    			mImage.applyMask(CvmMaskFactory.getHighBoostMask(size, A));
+	    			mImage.normalize();
 	    			break;
 	    		case 2:
 	    			size = Integer.parseInt(param1.getText().toString());

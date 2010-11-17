@@ -11,22 +11,6 @@ package edu.uco.cvm.core;
  */
 public class CvmMaskFactory {
 	
-	private static CvmMatrixDouble scaleMask(CvmMatrixDouble mask) throws Exception{
-		double sum = 0;
-		
-		for(int i = 0; i < mask.getCols(); i++)
-			for(int j = 0; j < mask.getRows(); j++)
-				sum += mask.getElement(i, j);
-		
-		if(sum != 1){
-			for(int i = 0; i < mask.getCols(); i++)
-				for(int j = 0; j < mask.getRows(); j++)
-					mask.setElement(i, j, mask.getElement(i, j) / (double) sum);	
-			}
-		
-		return mask;
-		}
-	
     public static CvmMatrixDouble getAverageMask(int size) throws Exception{
         CvmMatrixDouble mask = new CvmMatrixDouble(size, size, 1 / (double)(size*size));
 
@@ -60,7 +44,7 @@ public class CvmMaskFactory {
         /** El pixel central de la mascara lo rellenamos con el valor correspondiente */
         mask.setElement((int)Math.ceil(size / 2), (int)Math.ceil(size / 2), (size*size + A - 1));
 
-        return CvmMaskFactory.scaleMask(mask);
+        return mask;
         }
     
     public static CvmMatrixDouble getVSobelMask() throws Exception{
