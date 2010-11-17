@@ -7,6 +7,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import edu.uco.cvm.test.CvmChannelTest;
+import edu.uco.cvm.test.CvmColorSpaceTest;
 import edu.uco.cvm.test.CvmMatrixTest;
 import edu.uco.cvm.test.CvmMatrixTypesTest;
 
@@ -47,6 +48,10 @@ public class MainActivity extends Activity {
 	        	return true;
 	        case R.id.test_matrixtypes:
 	        	newActivity = new Intent(this, CvmMatrixTypesTest.class);
+	        	this.startActivity(newActivity);
+	        	return true;
+	        case R.id.test_colorspace:
+	        	newActivity = new Intent(this, CvmColorSpaceTest.class);
 	        	this.startActivity(newActivity);
 	        	return true;
 	        default:

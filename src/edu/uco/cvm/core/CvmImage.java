@@ -53,7 +53,7 @@ public class CvmImage {
      * @param bitmap Imagen de partida.
      * @param mode Modo en que se representara la imagen. Los modos admitidos son RGB y GRAYSCALE.
      */
-    public CvmImage(Bitmap bitmap, int mode) throws Exception{
+    public CvmImage(Bitmap bitmap, int mode){
     	
     	this.width = bitmap.getWidth();
     	this.height = bitmap.getHeight();
@@ -72,6 +72,13 @@ public class CvmImage {
     		this.data[0] = new CvmChannel(bitmap, CvmChannel.RED);
     		this.data[1] = new CvmChannel(bitmap, CvmChannel.GREEN);
     		this.data[2] = new CvmChannel(bitmap, CvmChannel.BLUE);
+    		}
+    	else if(this.mode == CvmImage.HSV){
+    		this.data = new CvmChannel[3];
+    		
+    		this.data[0] = new CvmChannel(bitmap, CvmChannel.HUE);
+    		this.data[1] = new CvmChannel(bitmap, CvmChannel.SATURATION);
+    		this.data[2] = new CvmChannel(bitmap, CvmChannel.VALUE);
     		}
         }
     
@@ -105,7 +112,31 @@ public class CvmImage {
     		this.data[1] = new CvmChannel(bitmap, CvmChannel.GREEN);
     		this.data[2] = new CvmChannel(bitmap, CvmChannel.BLUE);
     		}
+    	else if(this.mode == CvmImage.HSV){
+    		this.data = new CvmChannel[3];
+    		
+    		this.data[0] = new CvmChannel(bitmap, CvmChannel.HUE);
+    		this.data[1] = new CvmChannel(bitmap, CvmChannel.SATURATION);
+    		this.data[2] = new CvmChannel(bitmap, CvmChannel.VALUE);
+    		}
         }
+    
+    public CvmImage(CvmImage copy){
+    	this.width = copy.width;
+    	this.height = copy.height;
+    	this.mode = copy.mode;
+    	this.transfoList = new LinkedList<CvmMatrixDouble>();
+    	ListIterator<CvmMatrixDouble> it = copy.transfoList.listIterator(copy.transfoList.size());
+        while(it.hasNext())
+            try{
+                this.transfoList.add(new CvmMatrixDouble(it.next()));
+                }
+            catch(Exception e){}
+    	
+    	this.data = new CvmChannel[copy.data.length];
+    	for(int i = 0; i < copy.data.length; i++)
+    		this.data[i] = new CvmChannel(copy.data[i]);
+    	}
     
     public CvmImage(CvmChannel channel){
     	this.width = channel.cols;
@@ -134,16 +165,24 @@ public class CvmImage {
     	return this.height;	
     	}
 
-    
+    /**Controlar que el index no se salga de rango!!!! */
+    public CvmChannel getChannel(int index){
+    	CvmChannel copy = new CvmChannel(this.data[index]);
+    	return copy;
+    	}
     /**
      * Convierte la imagen RGB a escala de grises.
      */
-    public void convertToGray() throws Exception{
-    	if(this.mode == CvmImage.RGB){
+    public void changeColorSpace(int mode){
+    	
+    	if(this.mode == mode)
+    		return;
+    	
+    	if(this.mode == CvmImage.RGB && mode == CvmImage.GRAYSCALE){
 	    	int pixels[][] = new int[this.width][this.height];
 	    	
-	    	for(int i = 0; i < this.width; i++){
-	    		for(int j = 0; j < this.height; j++){
+	    	for(int i = 0; i < this.height; i++){
+	    		for(int j = 0; j < this.width; j++){
 	    			int r = data[0].getElement(i, j);
 	    			int g = data[1].getElement(i, j);
 	    			int b = data[2].getElement(i, j);
@@ -157,10 +196,43 @@ public class CvmImage {
 	    	this.data = new CvmChannel[1];
 	    	this.data[0] = new CvmChannel(this.width, this.height, pixels, CvmChannel.GRAY);
     		}
+    	else if(this.mode == CvmImage.RGB && mode == CvmImage.HSV){	    	
+	    	for(int i = 0; i < this.height; i++){
+	    		for(int j = 0; j < this.width; j++){
+	    			int r = data[0].getElement(i, j);
+	    			int g = data[1].getElement(i, j);
+	    			int b = data[2].getElement(i, j);
+	    			
+	    			int h=0, s=0, v=0;
+	    			int maxc = Math.max(r, Math.max(g, b));
+	    			int minc = Math.min(r, Math.min(g, b));
+	    			
+	    			if(maxc == minc)
+	    				h = 0;
+	    			else if(maxc == r)
+	    		        h = (int)(60 * ((g - b) / (double)(maxc - minc)) % 360);
+	    			else if(maxc == g)
+	    				h = (int)(60 * ((b - r) / (double)(maxc - minc)) + 120);
+	    			else if(maxc == b)
+	    				h = (int)(60 * ((r - g) / (double)(maxc - minc)) + 240);
+	    			
+	    			v = maxc;
+	    			s = (maxc == 0) ? 0 : (int)(Short.MAX_VALUE * (1 - (minc / (double)maxc)));
+	    			
+	    			data[0].setElement(i,j,h);
+	    			data[1].setElement(i,j,s);
+	    				data[1].scaleFactor = Short.MAX_VALUE;
+	    			data[2].setElement(i,j,v);
+	    			}
+	    		}
+    		}
+    	
+    	this.mode = mode;
         }
 
     /**
      * Agrega una transformacion de traslacion a la lista de transformaciones de la imagen.
+     * 
      * @param Tx Numero de pixels de traslacion en el eje X.
      * @param Ty Numero de pixels de traslacion en el eje Y.
      */
@@ -300,6 +372,20 @@ public class CvmImage {
     			int r = data[0].getElement(row, col);
     			int g = data[1].getElement(row, col);
     			int b = data[2].getElement(row, col);
+    			
+    			pixels[i] = Color.rgb(r,g,b);
+    			}
+    		}
+    	else if(this.mode == CvmImage.HSV){
+	    	CvmImage copy = new CvmImage(this);
+	    	copy.changeColorSpace(CvmImage.RGB);
+	    	
+    		for(int i = 0; i < this.width * this.height; i++){
+    			int row = i / this.width;
+    			int col = i % this.width;
+    			int r = copy.data[0].getElement(row, col);
+    			int g = copy.data[1].getElement(row, col);
+    			int b = copy.data[2].getElement(row, col);
     			
     			pixels[i] = Color.rgb(r,g,b);
     			}

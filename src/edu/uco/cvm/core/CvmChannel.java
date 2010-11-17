@@ -24,16 +24,16 @@ import edu.uco.cvm.exceptions.CvmIncompatibleMatrixSizeException;
 
 public class CvmChannel extends CvmMatrixInt {
 	
-	/** Canal Gris */
 	public static final int GRAY = 0;
-	/** Canal Rojo */
+
 	public static final int RED = 1;
-	/** Canal Verde */
 	public static final int GREEN = 2;
-	/** Canal Azul */
 	public static final int BLUE = 3;
-	/** Canal de Transparencia */
 	public static final int ALPHA = 4;
+	
+	public static final int HUE = 5;
+	public static final int SATURATION = 6;
+	public static final int VALUE = 7;
 	
 	public static final int THRES_BINARY = 0;
 	public static final int THRES_BINARY_INV = 1;
@@ -392,6 +392,7 @@ public class CvmChannel extends CvmMatrixInt {
      * @return Equivalente en el formato Bitmap al canal mantenida por esta clase.
      */
     public Bitmap toBitmap(){
+    	this.normalize();
     	int pixels[] = this.toArray();
     	
     	for(int i = 0; i < pixels.length; i++){    		
