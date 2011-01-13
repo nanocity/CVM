@@ -19,14 +19,18 @@
  ******************************************************************************/
 package edu.uco.cvm.test;
 
+import java.util.Hashtable;
+
 import org.me.applications.R;
+
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.ImageView;
 import edu.uco.cvm.core.CvmChannel;
-import edu.uco.cvm.core.CvmMaskFactory;
+import edu.uco.cvm.core.CvmHistogram;
 
 public class CvmChannelTest extends Activity {
 	
@@ -46,16 +50,19 @@ public class CvmChannelTest extends Activity {
     	ImageView green = (ImageView) findViewById(R.id.channelTestG);
     	ImageView blue = (ImageView) findViewById(R.id.channelTestB);
         
-        Bitmap mBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.bitmap_cat);
+        Bitmap mBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.bitmap_lena);
         original.setImageBitmap(mBitmap);
         
         CvmChannel c1 = new CvmChannel(mBitmap, CvmChannel.GRAY);
         
-        red.setImageBitmap(c1.toBitmap());
+        //CvmHistogram gHist = c1.getGradientHistogram();
+               
+        //red.setImageBitmap(c1.toBitmap());
+        red.setImageBitmap(c1.cannyEdgeDetector().toBitmap());
         c1.applyThreshold(100, 255, CvmChannel.THRES_OTSU);
-        green.setImageBitmap(c1.toBitmap());
-        c1.updateHistogram();
-        blue.setImageBitmap(c1.getHistogramImage());     
+        green.setImageBitmap(c1.toBitmap());     
+        CvmHistogram vHist = c1.getValuesHistogram();
+        blue.setImageBitmap(vHist.getImage(0, 255, 256, 300).toBitmap(false));
 		}
 	
 	}

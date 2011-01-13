@@ -19,6 +19,8 @@
  ******************************************************************************/
 package edu.uco.cvm.core;
 
+import java.util.Hashtable;
+
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.Color;
@@ -62,7 +64,6 @@ public class CvmChannel extends CvmMatrixInt {
 	public static final int THRES_OTSU = 5;
 	
 	private final int channel;
-	private CvmHistogram histogram;
 	
 	/**
 	 * Crea un canal a partir de un objeto Bitmap. Debe indicarse que canal del Bitmap se quiere
@@ -77,7 +78,6 @@ public class CvmChannel extends CvmMatrixInt {
 	public CvmChannel(Bitmap bm, int channel) throws NegativeArraySizeException{
 		super(bm.getHeight(), bm.getWidth());
 		
-		this.histogram = new CvmHistogram();
 		this.channel = channel;
 		
         int pixels [] = new int[this.cols * this.rows];
@@ -112,7 +112,6 @@ public class CvmChannel extends CvmMatrixInt {
 		super(matrix);
 		
 		this.channel = CvmChannel.GRAY;
-		this.histogram = new CvmHistogram();
 		}
 	
 	/**
@@ -316,10 +315,12 @@ public class CvmChannel extends CvmMatrixInt {
 		double wB = 0, wF = 1;
 		double WCV, minWCV = 0;
 		
-		this.updateHistogram();
+		//this.updateHistogram();
+		
+		CvmHistogram hist = new CvmHistogram(this);
 		
 		for(int i = 0; i < 256; i++){
-			numPixels += this.histogram.get(i);
+			numPixels += hist.get(i);
 			if(numPixels == 0)
 				break;
 			
@@ -328,20 +329,20 @@ public class CvmChannel extends CvmMatrixInt {
 			
 			float meanB = 0;
 			for(int j = 0; j <= i; j++)
-				meanB += j * this.histogram.get(j);
+				meanB += j * hist.get(j);
 			meanB /= numPixels;
 			float varianceB = 0;
 			for(int j = 0; j <= i; j++)
-				varianceB += (j - meanB) * (j - meanB) * this.histogram.get(j);
+				varianceB += (j - meanB) * (j - meanB) * hist.get(j);
 			varianceB /= numPixels;
 			
 			float meanF = 0;
 			for(int j = i+1; j < 256; j++)
-				meanF += j * this.histogram.get(j);
+				meanF += j * hist.get(j);
 			meanF /= this.data.length - numPixels;
 			float varianceF = 0;
 			for(int j = i+1; j < 256; j++)
-				varianceF += (j - meanF) * (j - meanF) * this.histogram.get(j);
+				varianceF += (j - meanF) * (j - meanF) * hist.get(j);
 			varianceF /= this.data.length - numPixels;
 			
 			WCV = varianceB*wB + varianceF*wF;
@@ -380,29 +381,114 @@ public class CvmChannel extends CvmMatrixInt {
 			this.data[i] = (int)Math.sqrt(this.data[i] * this.data[i] + channel.data[i] * channel.data[i]);
 		}
 	
-	/**
-	 * Actualiza los valores del histograma con los que contenga el canal.
-	 */
-	public void updateHistogram(){
-		this.histogram.reset();
+	public CvmHistogram getValuesHistogram(){
+		CvmHistogram hist = new CvmHistogram(this);
 		
-		for(int i = 0; i < this.data.length; i++){
-			this.histogram.inc((int)this.data[i]);
-			}
+		return hist;
 		}
-	/**
-	 * <p>Obtiene una imagen que representa el histograma del canal como un gráfico de barras.</p>
-	 * <p>En cada columna se representan la cantidad de pixels que toman el valor de dicha columna 
-	 * en el canal de izquierda a derecha comenzando en 0 hasta 255. La altura de la barra es 
-	 * proporcional al alto de la imagen, lo que quiere decir que el valor de luminosidad que tengan
-	 * más pixels siempre llegará a lo mas alto de la imagen y los demás valores serán relativos a él.</p>
-	 * 
-	 * @return Imagen cuadrada de 256 px de lado que representa el histograma del canal. 
-	 */
-	public Bitmap getHistogramImage(){
-		CvmChannel img = this.histogram.getImage();
+
+	public CvmHistogram getGradientHistogram(){
+		CvmHistogram hist = new CvmHistogram();		
 		
-		return img.toBitmap();
+		CvmChannel hor = new CvmChannel(this);
+		CvmChannel ver = new CvmChannel(this);
+		
+		try{
+			hor.applyMask(CvmMaskFactory.getHSobelMask());
+			ver.applyMask(CvmMaskFactory.getVSobelMask());
+			}
+		catch(Exception e){}
+		
+		for(int i = 0; i < hor.data.length; i++){
+			int angle = 0;
+			try{
+				angle = ((int) Math.toDegrees(Math.atan(ver.data[i] / (double)hor.data[i])));
+				if(angle < 0)
+					angle = 180 - Math.abs(angle);
+				else
+					angle = angle % 180;
+				}
+			catch(ArithmeticException e){
+				angle = -1;
+				}
+			
+			hist.increment(angle);
+			}
+		
+		return hist;
+		}
+	
+	public CvmChannel cannyEdgeDetector(){
+		CvmChannel copy = new CvmChannel(this);
+		
+		CvmChannel channelA = new CvmChannel(copy);
+		CvmChannel channelB = new CvmChannel(copy);		
+		try{
+			//Aplicacmos una mascara Gaussiana
+			copy.applyMask(CvmMaskFactory.getGaussianMask(5, 1.4));
+			
+			
+			//Pasamos los filtros de sobel
+			channelA.applyMask(CvmMaskFactory.getHSobelMask());
+			channelB.applyMask(CvmMaskFactory.getVSobelMask());
+			
+			//Calculamos el valor del modulo y el del angulo
+			copy = new CvmChannel(channelA);
+			copy.module(channelB);
+			
+			for(int i = 0; i < channelA.data.length; i++){
+				int angle = 0;
+				try{
+					angle = ((int) Math.toDegrees(Math.atan(channelB.data[i] / (double)channelA.data[i])));
+					}
+				catch(ArithmeticException e){
+					angle = -1;
+					}
+				
+				if(angle < 0)
+					angle = 180 - Math.abs(angle);
+				else
+					angle = angle % 180;
+				
+				channelA.data[i] = angle;
+				}
+			
+			//Ahora en funcion de la direccion de angulo "adelgazamos la imagen"
+			for(int i = 0; i < channelA.data.length; i++){
+				int value = copy.data[i];
+				int angle = channelA.data[i];
+				int n1 = 0, n2 = 0;
+				
+				try{
+					if(angle >= 0 && angle < 45){
+						n1 = copy.data[i-1];
+						n2 = copy.data[i+1];
+						}
+					else if(angle >= 45 && angle < 90){
+						n1 = copy.data[i - copy.cols - 1];
+						n2 = copy.data[i + copy.cols - 1];
+						}
+					else if(angle >= 90 && angle < 135){
+						n1 = copy.data[i - copy.cols];
+						n2 = copy.data[i + copy.cols];
+						}
+					else if(angle >= 135 && angle < 180){
+						n1 = copy.data[i - copy.cols + 1];
+						n2 = copy.data[i + copy.cols + 1];
+						}
+					}
+				catch(ArrayIndexOutOfBoundsException e){
+					n1 = 0;
+					n2 = 0;
+					}
+				
+				if(value < n1 || value < n2)
+					channelB.data[i] = 0;
+				}
+			}
+		catch(Exception e){}
+		
+		return channelB;
 		}
 	
 	/**
@@ -412,6 +498,26 @@ public class CvmChannel extends CvmMatrixInt {
      */
     public Bitmap toBitmap(){
     	this.normalize();
+    	int pixels[] = this.toArray();
+    	
+    	for(int i = 0; i < pixels.length; i++){    		
+    		pixels[i] = Color.rgb(pixels[i],pixels[i],pixels[i]);
+    		}
+    	    	
+    	return Bitmap.createBitmap(pixels, this.cols, this.rows, Config.ARGB_8888);
+    	}
+    
+    /**
+     * Convierte el canal a un Bitmap, formato nativo de Android en el que se representan las imagenes.
+     * 
+     * @return Equivalente en el formato Bitmap al canal mantenida por esta clase.
+     */
+    public Bitmap toBitmap(boolean normalize){
+    	if(normalize == true)
+    		this.normalize();
+    	
+    	//Sino, se deja que los valores se pasen
+
     	int pixels[] = this.toArray();
     	
     	for(int i = 0; i < pixels.length; i++){    		

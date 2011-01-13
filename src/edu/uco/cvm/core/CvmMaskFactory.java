@@ -65,7 +65,13 @@ public class CvmMaskFactory {
 
         return mask;
         }
-    
+    /**
+     * -1  0  1
+     * -2  0  2
+     * -1  0  1
+     * @return
+     * @throws Exception
+     */
     public static CvmMatrixDouble getVSobelMask() throws Exception{
         CvmMatrixDouble mask = new CvmMatrixDouble(3, 3, 0);
 
@@ -80,7 +86,13 @@ public class CvmMaskFactory {
 
         return mask;
         }
-
+    /**
+     * -1 -2 -1
+     *  0  0  0
+     *  1  2  1
+     * @return
+     * @throws Exception
+     */
     public static CvmMatrixDouble getHSobelMask() throws Exception{
         CvmMatrixDouble mask = new CvmMatrixDouble(3, 3, 0);
 
